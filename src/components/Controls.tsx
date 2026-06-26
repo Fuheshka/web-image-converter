@@ -64,6 +64,7 @@ export function Controls({
   const totalSaved = totalOriginal - totalConverted;
   const totalSavedPercent = totalOriginal > 0 ? Math.round((totalSaved / totalOriginal) * 100) : 0;
   const isSmaller = totalSaved > 0;
+  const isBigger = totalSaved < 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -237,18 +238,53 @@ export function Controls({
 
       {/* Total Savings Summary */}
       {successCount > 0 && totalOriginal > 0 && (
-        <div className="p-4 rounded-2xl border border-emerald-500/35 bg-emerald-500/10 flex flex-col gap-1 text-center shadow-sm">
-          <span className="text-xs text-emerald-800 uppercase tracking-wider font-bold">Суммарная экономия</span>
+        <div className={`p-4 rounded-2xl flex flex-col gap-1 text-center shadow-sm border ${
+          isSmaller 
+            ? 'border-emerald-500/35 bg-emerald-500/10' 
+            : isBigger
+              ? 'border-amber-500/35 bg-amber-500/10'
+              : 'border-slate-500/20 bg-slate-500/5'
+        }`}>
+          <span className={`text-xs uppercase tracking-wider font-bold ${
+            isSmaller 
+              ? 'text-emerald-800' 
+              : isBigger 
+                ? 'text-amber-800' 
+                : 'text-slate-700'
+          }`}>
+            {isSmaller 
+              ? 'Суммарная экономия' 
+              : isBigger 
+                ? 'Изменение размера' 
+                : 'Размер не изменился'}
+          </span>
           <div className="flex justify-center items-baseline gap-2 mt-1">
-            <span className="text-2xl font-black text-emerald-600">
-              {isSmaller ? `-${totalSavedPercent}%` : `+${Math.abs(totalSavedPercent)}%`}
+            <span className={`text-2xl font-black ${
+              isSmaller 
+                ? 'text-emerald-600' 
+                : isBigger 
+                  ? 'text-amber-600' 
+                  : 'text-slate-600'
+            }`}>
+              {isSmaller 
+                ? `-${totalSavedPercent}%` 
+                : isBigger 
+                  ? `+${Math.abs(totalSavedPercent)}%` 
+                  : '0%'}
             </span>
-            <span className="text-sm font-semibold text-slate-600">
-              ({formatSize(Math.abs(totalSaved))})
-            </span>
+            {totalSaved !== 0 && (
+              <span className="text-sm font-semibold text-slate-600">
+                ({formatSize(Math.abs(totalSaved))})
+              </span>
+            )}
           </div>
           <span className="text-[10px] text-slate-500 font-medium">
-            Размер уменьшился с {formatSize(totalOriginal)} до {formatSize(totalConverted)}
+            {isSmaller 
+              ? `Размер уменьшился с ${formatSize(totalOriginal)} до ${formatSize(totalConverted)}`
+              : isBigger
+                ? `Размер увеличился с ${formatSize(totalOriginal)} до ${formatSize(totalConverted)}`
+                : `Размер остался прежним: ${formatSize(totalOriginal)}`
+            }
           </span>
         </div>
       )}

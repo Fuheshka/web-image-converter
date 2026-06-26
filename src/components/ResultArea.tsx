@@ -34,7 +34,7 @@ export function ResultArea({
 }: ResultAreaProps) {
   const originalSize = originalFile.size;
   const sizeDiff = originalSize - convertedSize;
-  const savingsPercent = Math.round((sizeDiff / originalSize) * 100);
+  const savingsPercent = originalSize > 0 ? Math.round((sizeDiff / originalSize) * 100) : 0;
   const isSmaller = sizeDiff > 0;
 
   const downloadFilename = getConvertedFilename(originalFile.name, outputFormat);

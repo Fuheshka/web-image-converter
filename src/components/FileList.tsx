@@ -51,11 +51,28 @@ function FileRow({
   // Calculate savings
   let savingsText = '';
   let isSmaller = false;
-  if (item.status === 'success' && item.convertedSize) {
+  let isBigger = false;
+  
+  if (item.status === 'success' && item.convertedSize !== null) {
     const diff = item.file.size - item.convertedSize;
-    const pct = Math.round((diff / item.file.size) * 100);
     isSmaller = diff > 0;
-    savingsText = pct > 0 ? `-${pct}%` : `+${Math.abs(pct)}%`;
+    isBigger = diff < 0;
+    
+    if (item.file.size > 0) {
+      const pct = Math.round((diff / item.file.size) * 100);
+      if (diff === 0) {
+        savingsText = '0%';
+      } else {
+        savingsText = pct > 0 ? `-${pct}%` : `+${Math.abs(pct)}%`;
+      }
+    } else {
+      if (item.convertedSize === 0) {
+        savingsText = '0%';
+      } else {
+        savingsText = '+100%';
+        isBigger = true;
+      }
+    }
   }
 
   const downloadName = getConvertedFilename(
@@ -96,7 +113,11 @@ function FileRow({
               <span className="text-sky-600 font-bold">{convertedSizeStr}</span>
               {savingsText && (
                 <span className={`font-bold px-1.5 py-0.5 rounded-md text-[10px] ${
-                  isSmaller ? 'text-emerald-700 bg-emerald-100 border border-emerald-200/50' : 'text-amber-700 bg-amber-100 border border-amber-200/50'
+                  isSmaller 
+                    ? 'text-emerald-700 bg-emerald-100 border border-emerald-200/50' 
+                    : isBigger
+                      ? 'text-amber-700 bg-amber-100 border border-amber-200/50'
+                      : 'text-slate-700 bg-slate-100 border border-slate-200/50'
                 }`}>
                   {savingsText}
                 </span>

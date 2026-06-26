@@ -160,7 +160,7 @@ export function useImageConverter(): UseImageConverterReturn {
       };
       img.onerror = () => {
         URL.revokeObjectURL(objectUrl);
-        reject(new Error('Не удалось прочитать файл изображения.'));
+        reject(new Error('Файл поврежден или не является поддерживаемым изображением.'));
       };
       img.src = objectUrl;
     });
@@ -168,6 +168,10 @@ export function useImageConverter(): UseImageConverterReturn {
     // Calculate dimensions
     let width = img.naturalWidth;
     let height = img.naturalHeight;
+
+    if (width === 0 || height === 0) {
+      throw new Error('Изображение имеет недопустимый размер (0x0).');
+    }
 
     if (resizeMax && (width > resizeMax || height > resizeMax)) {
       if (width > height) {
@@ -302,11 +306,12 @@ export function useImageConverter(): UseImageConverterReturn {
 
     setError(null);
     const zip = new JSZip();
+    const usedFilenames = new Set<string>();
 
     successItems.forEach((item) => {
       if (item.convertedBlob) {
         const originalIndex = items.findIndex((p) => p.id === item.id);
-        const filename = getConvertedFilename(
+        let filename = getConvertedFilename(
           item.file.name,
           globalFormat,
           namingType,
@@ -314,6 +319,23 @@ export function useImageConverter(): UseImageConverterReturn {
           customSuffix,
           originalIndex
         );
+
+        // De-duplicate filename
+        if (usedFilenames.has(filename)) {
+          const lastDotIndex = filename.lastIndexOf('.');
+          const baseName = lastDotIndex !== -1 ? filename.substring(0, lastDotIndex) : filename;
+          const ext = lastDotIndex !== -1 ? filename.substring(lastDotIndex + 1) : globalFormat;
+          
+          let counter = 1;
+          let newFilename = `${baseName} (${counter}).${ext}`;
+          while (usedFilenames.has(newFilename)) {
+            counter++;
+            newFilename = `${baseName} (${counter}).${ext}`;
+          }
+          filename = newFilename;
+        }
+
+        usedFilenames.add(filename);
         zip.file(filename, item.convertedBlob);
       }
     });
