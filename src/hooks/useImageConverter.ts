@@ -18,11 +18,13 @@ export interface UseImageConverterReturn {
   items: ConversionItem[];
   globalFormat: OutputFormat;
   globalQuality: number;
+  globalResizeMax: number | null;
   isConverting: boolean;
   error: string | null;
   namingType: NamingType;
   customPrefix: string;
   customSuffix: string;
+  setGlobalResizeMax: (max: number | null) => void;
   setNamingType: (type: NamingType) => void;
   setCustomPrefix: (prefix: string) => void;
   setCustomSuffix: (suffix: string) => void;
@@ -65,6 +67,9 @@ export function useImageConverter(): UseImageConverterReturn {
   const [globalQuality, setGlobalQuality] = useState<number>(0.85);
   const [isConverting, setIsConverting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Resize state
+  const [globalResizeMax, setGlobalResizeMax] = useState<number | null>(null);
 
   // Renaming configurations state
   const [namingType, setNamingType] = useState<NamingType>('suffix');
@@ -141,7 +146,8 @@ export function useImageConverter(): UseImageConverterReturn {
   const convertSingle = async (
     file: File,
     format: OutputFormat,
-    quality: number
+    quality: number,
+    resizeMax: number | null
   ): Promise<{ blob: Blob; url: string }> => {
     // Create source image object
     const img = new Image();
@@ -159,10 +165,24 @@ export function useImageConverter(): UseImageConverterReturn {
       img.src = objectUrl;
     });
 
+    // Calculate dimensions
+    let width = img.naturalWidth;
+    let height = img.naturalHeight;
+
+    if (resizeMax && (width > resizeMax || height > resizeMax)) {
+      if (width > height) {
+        height = Math.round((height * resizeMax) / width);
+        width = resizeMax;
+      } else {
+        width = Math.round((width * resizeMax) / height);
+        height = resizeMax;
+      }
+    }
+
     // Create offscreen canvas
     const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+    canvas.width = width;
+    canvas.height = height;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -175,8 +195,8 @@ export function useImageConverter(): UseImageConverterReturn {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Draw original image
-    ctx.drawImage(img, 0, 0);
+    // Draw original image (potentially resized)
+    ctx.drawImage(img, 0, 0, width, height);
 
     const mimeType = (format === 'jpg' || format === 'jpeg') ? 'image/jpeg' : `image/${format}`;
     const compressionQuality = format === 'png' ? undefined : quality;
@@ -224,7 +244,12 @@ export function useImageConverter(): UseImageConverterReturn {
         );
 
         try {
-          const { blob, url } = await convertSingle(item.file, globalFormat, globalQuality);
+          const { blob, url } = await convertSingle(
+            item.file,
+            globalFormat,
+            globalQuality,
+            globalResizeMax
+          );
 
           // Revoke old URL if it exists
           if (item.convertedUrl) {
@@ -266,7 +291,7 @@ export function useImageConverter(): UseImageConverterReturn {
     
     await Promise.all(workers);
     setIsConverting(false);
-  }, [items, globalFormat, globalQuality]);
+  }, [items, globalFormat, globalQuality, globalResizeMax]);
 
   const downloadAllZip = useCallback(async () => {
     const successItems = items.filter((item) => item.status === 'success' && item.convertedBlob);
@@ -315,11 +340,13 @@ export function useImageConverter(): UseImageConverterReturn {
     items,
     globalFormat,
     globalQuality,
+    globalResizeMax,
     isConverting,
     error,
     namingType,
     customPrefix,
     customSuffix,
+    setGlobalResizeMax,
     setNamingType,
     setCustomPrefix,
     setCustomSuffix,

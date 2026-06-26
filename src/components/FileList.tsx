@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Trash2, Loader2, Check, AlertCircle, Download, FileImage } from 'lucide-react';
+import { Trash2, Loader2, Check, AlertCircle, Download, FileImage, Search, X } from 'lucide-react';
 import { getConvertedFilename } from '../hooks/useImageConverter';
 import type { ConversionItem, OutputFormat, NamingType } from '../hooks/useImageConverter';
 
@@ -159,26 +159,112 @@ export function FileList({
   customSuffix,
   onRemove,
 }: FileListProps) {
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'idle' | 'converting' | 'success' | 'error'>('all');
+
+  const filteredItems = items.filter((item, index) => {
+    const targetName = getConvertedFilename(
+      item.file.name,
+      globalFormat,
+      namingType,
+      customPrefix,
+      customSuffix,
+      index
+    );
+
+    const matchesSearch =
+      item.file.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      targetName.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex justify-between items-center px-1">
-        <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
-          Очередь файлов ({items.length})
-        </span>
-      </div>
-      <div className="flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-1">
-        {items.map((item, index) => (
-          <FileRow
-            key={item.id}
-            item={item}
-            globalFormat={globalFormat}
-            namingType={namingType}
-            customPrefix={customPrefix}
-            customSuffix={customSuffix}
-            index={index}
-            onRemove={() => onRemove(item.id)}
+    <div className="flex flex-col gap-4">
+      {/* Search & Filter Header */}
+      <div className="flex flex-col gap-2.5">
+        <div className="flex justify-between items-center px-1">
+          <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+            Очередь файлов ({items.length})
+          </span>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Поиск по названию..."
+            className="glass-input pl-9 pr-8 py-2 w-full rounded-xl text-sm text-slate-200"
           />
-        ))}
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Status Filter Pills */}
+        <div className="flex flex-wrap gap-1 px-1">
+          {([
+            { key: 'all', label: 'Все' },
+            { key: 'idle', label: 'Ожидают' },
+            { key: 'converting', label: 'В процессе' },
+            { key: 'success', label: 'Готово' },
+            { key: 'error', label: 'Ошибки' },
+          ] as { key: typeof statusFilter; label: string }[]).map((pill) => {
+            const count = pill.key === 'all' 
+              ? items.length 
+              : items.filter((item) => item.status === pill.key).length;
+            
+            return (
+              <button
+                key={pill.key}
+                type="button"
+                onClick={() => setStatusFilter(pill.key)}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
+                  statusFilter === pill.key
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10 hover:text-slate-300'
+                }`}
+              >
+                {pill.label} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Files List Container */}
+      <div className="flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-1">
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-8 text-sm text-slate-500 border border-dashed border-white/5 rounded-xl bg-white/[0.01]">
+            Файлы не найдены
+          </div>
+        ) : (
+          filteredItems.map((item) => {
+            const originalIndex = items.findIndex((p) => p.id === item.id);
+            return (
+              <FileRow
+                key={item.id}
+                item={item}
+                globalFormat={globalFormat}
+                namingType={namingType}
+                customPrefix={customPrefix}
+                customSuffix={customSuffix}
+                index={originalIndex}
+                onRemove={() => onRemove(item.id)}
+              />
+            );
+          })
+        )}
       </div>
     </div>
   );

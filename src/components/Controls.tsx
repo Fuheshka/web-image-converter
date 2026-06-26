@@ -1,11 +1,12 @@
-import { Settings, Loader2, ArrowRight, Download, RefreshCw, Type } from 'lucide-react';
-import type { OutputFormat, NamingType } from '../hooks/useImageConverter';
+import { Settings, Loader2, ArrowRight, Download, RefreshCw, Type, Maximize2 } from 'lucide-react';
+import type { OutputFormat, NamingType, ConversionItem } from '../hooks/useImageConverter';
 
 interface ControlsProps {
   totalCount: number;
   successCount: number;
   outputFormat: OutputFormat;
   quality: number;
+  globalResizeMax: number | null;
   isConverting: boolean;
   error: string | null;
   namingType: NamingType;
@@ -13,19 +14,30 @@ interface ControlsProps {
   customSuffix: string;
   setOutputFormat: (format: OutputFormat) => void;
   setQuality: (quality: number) => void;
+  setGlobalResizeMax: (max: number | null) => void;
   setNamingType: (type: NamingType) => void;
   setCustomPrefix: (prefix: string) => void;
   setCustomSuffix: (suffix: string) => void;
   onConvert: () => void;
   onDownloadZip: () => void;
   onClear: () => void;
+  items: ConversionItem[];
 }
+
+const formatSize = (bytes: number): string => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
 export function Controls({
   totalCount,
   successCount,
   outputFormat,
   quality,
+  globalResizeMax,
   isConverting,
   error,
   namingType,
@@ -33,15 +45,25 @@ export function Controls({
   customSuffix,
   setOutputFormat,
   setQuality,
+  setGlobalResizeMax,
   setNamingType,
   setCustomPrefix,
   setCustomSuffix,
   onConvert,
   onDownloadZip,
   onClear,
+  items,
 }: ControlsProps) {
   const showQualitySlider = outputFormat === 'jpg' || outputFormat === 'jpeg' || outputFormat === 'webp';
   const allConverted = successCount === totalCount && totalCount > 0;
+
+  // Calculate total savings
+  const successItems = items.filter((item) => item.status === 'success');
+  const totalOriginal = successItems.reduce((acc, item) => acc + item.file.size, 0);
+  const totalConverted = successItems.reduce((acc, item) => acc + (item.convertedSize || 0), 0);
+  const totalSaved = totalOriginal - totalConverted;
+  const totalSavedPercent = totalOriginal > 0 ? Math.round((totalSaved / totalOriginal) * 100) : 0;
+  const isSmaller = totalSaved > 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -136,6 +158,51 @@ export function Controls({
           </div>
         </div>
 
+        {/* Resize Options */}
+        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={globalResizeMax !== null}
+                onChange={(e) => setGlobalResizeMax(e.target.checked ? 1920 : null)}
+                disabled={isConverting}
+                className="w-4 h-4 rounded text-cyan-500 bg-white/5 border-white/10 focus:ring-cyan-500/30 focus:ring-offset-0 accent-cyan-500"
+              />
+              <span className="flex items-center gap-1.5">
+                <Maximize2 className="w-4 h-4 text-cyan-400" />
+                Изменить разрешение
+              </span>
+            </label>
+          </div>
+
+          {globalResizeMax !== null && (
+            <div className="flex flex-col gap-2 mt-1.5 animate-fade-in">
+              <span className="text-[10px] text-slate-400">Максимальная сторона (px):</span>
+              <div className="grid grid-cols-4 gap-1">
+                {([800, 1200, 1920, 2560] as number[]).map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setGlobalResizeMax(size)}
+                    disabled={isConverting}
+                    className={`py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                      globalResizeMax === size
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]'
+                        : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10 hover:text-slate-300'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+              <span className="text-[9px] text-slate-500">
+                Большие стороны будут уменьшены с сохранением пропорций.
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Quality Slider (Conditional) */}
         {showQualitySlider && (
           <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5">
@@ -165,6 +232,24 @@ export function Controls({
       {error && (
         <div className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 rounded-xl">
           {error}
+        </div>
+      )}
+
+      {/* Total Savings Summary */}
+      {successCount > 0 && totalOriginal > 0 && (
+        <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col gap-1 text-center">
+          <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Суммарная экономия</span>
+          <div className="flex justify-center items-baseline gap-2 mt-1">
+            <span className="text-2xl font-bold text-emerald-400">
+              {isSmaller ? `-${totalSavedPercent}%` : `+${Math.abs(totalSavedPercent)}%`}
+            </span>
+            <span className="text-sm font-medium text-slate-300">
+              ({formatSize(Math.abs(totalSaved))})
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-500">
+            Размер уменьшился с {formatSize(totalOriginal)} до {formatSize(totalConverted)}
+          </span>
         </div>
       )}
 

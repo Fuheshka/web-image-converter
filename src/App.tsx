@@ -6,17 +6,18 @@ import { FileList } from './components/FileList';
 import { Controls } from './components/Controls';
 import { Sparkles } from 'lucide-react';
 
-
 function App() {
   const {
     items,
     globalFormat,
     globalQuality,
+    globalResizeMax,
     isConverting,
     error,
     namingType,
     customPrefix,
     customSuffix,
+    setGlobalResizeMax,
     setNamingType,
     setCustomPrefix,
     setCustomSuffix,
@@ -113,6 +114,7 @@ function App() {
                   successCount={successCount}
                   outputFormat={globalFormat}
                   quality={globalQuality}
+                  globalResizeMax={globalResizeMax}
                   isConverting={isConverting}
                   error={error}
                   namingType={namingType}
@@ -120,12 +122,14 @@ function App() {
                   customSuffix={customSuffix}
                   setOutputFormat={setGlobalFormat}
                   setQuality={setGlobalQuality}
+                  setGlobalResizeMax={setGlobalResizeMax}
                   setNamingType={setNamingType}
                   setCustomPrefix={setCustomPrefix}
                   setCustomSuffix={setCustomSuffix}
                   onConvert={convertAll}
                   onDownloadZip={downloadAllZip}
                   onClear={clearFiles}
+                  items={items}
                 />
               </div>
             </div>
