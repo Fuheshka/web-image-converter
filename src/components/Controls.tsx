@@ -71,8 +71,8 @@ export function Controls({
       <div className="flex flex-col gap-5">
         {/* Output Format Picker */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5">
-            <Settings className="w-4 h-4 text-cyan-400" />
+          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+            <Settings className="w-4 h-4 text-sky-500" />
             Целевой формат
           </label>
           <div className="grid grid-cols-4 gap-1.5">
@@ -82,10 +82,10 @@ export function Controls({
                 type="button"
                 onClick={() => setOutputFormat(format)}
                 disabled={isConverting}
-                className={`py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 cursor-pointer ${
+                className={`py-2.5 rounded-2xl border text-sm font-bold transition-all duration-200 cursor-pointer ${
                   outputFormat === format
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-[0_0_10px_rgba(6,182,212,0.1)]'
-                    : 'bg-white/5 text-slate-300 border-white/5 hover:bg-white/10 hover:border-white/20'
+                    ? 'aero-btn-blue border-transparent'
+                    : 'aero-btn-glass border-transparent bg-white/20 hover:bg-white/40'
                 }`}
               >
                 {format.toUpperCase()}
@@ -95,9 +95,9 @@ export function Controls({
         </div>
 
         {/* Naming Options */}
-        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5">
-          <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 mb-1">
-            <Type className="w-4 h-4 text-cyan-400" />
+        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white/20 border border-white/40">
+          <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5 mb-1">
+            <Type className="w-4 h-4 text-sky-500" />
             Имена файлов
           </label>
           <div className="grid grid-cols-3 gap-1 mb-2">
@@ -111,10 +111,10 @@ export function Controls({
                 type="button"
                 onClick={() => setNamingType(opt.key)}
                 disabled={isConverting}
-                className={`py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all duration-200 cursor-pointer ${
+                className={`py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
                   namingType === opt.key
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                    : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10 hover:text-slate-300'
+                    ? 'aero-btn-blue border-transparent'
+                    : 'aero-btn-glass border-transparent bg-white/15 hover:bg-white/30'
                 }`}
               >
                 {opt.label}
@@ -124,28 +124,28 @@ export function Controls({
 
           {namingType === 'suffix' && (
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-slate-400">Добавить к имени:</span>
+              <span className="text-[10px] font-semibold text-slate-500">Добавить к имени:</span>
               <input
                 type="text"
                 value={customSuffix}
                 onChange={(e) => setCustomSuffix(e.target.value)}
                 disabled={isConverting}
                 placeholder="_converted"
-                className="glass-input px-3 py-1.5 rounded-lg text-xs text-slate-200"
+                className="aero-input px-3 py-1.5 rounded-xl text-xs"
               />
             </div>
           )}
 
           {namingType === 'custom' && (
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-slate-400">Префикс названия:</span>
+              <span className="text-[10px] font-semibold text-slate-500">Префикс названия:</span>
               <input
                 type="text"
                 value={customPrefix}
                 onChange={(e) => setCustomPrefix(e.target.value)}
                 disabled={isConverting}
                 placeholder="image"
-                className="glass-input px-3 py-1.5 rounded-lg text-xs text-slate-200"
+                className="aero-input px-3 py-1.5 rounded-xl text-xs"
               />
             </div>
           )}
@@ -159,18 +159,18 @@ export function Controls({
         </div>
 
         {/* Resize Options */}
-        <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5">
+        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white/20 border border-white/40">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-1.5 cursor-pointer select-none">
+            <label className="text-sm font-bold text-slate-700 flex items-center gap-1.5 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={globalResizeMax !== null}
                 onChange={(e) => setGlobalResizeMax(e.target.checked ? 1920 : null)}
                 disabled={isConverting}
-                className="w-4 h-4 rounded text-cyan-500 bg-white/5 border-white/10 focus:ring-cyan-500/30 focus:ring-offset-0 accent-cyan-500"
+                className="w-4 h-4 rounded text-sky-600 bg-white/40 border-sky-300 focus:ring-sky-500/20 accent-sky-500 cursor-pointer"
               />
               <span className="flex items-center gap-1.5">
-                <Maximize2 className="w-4 h-4 text-cyan-400" />
+                <Maximize2 className="w-4 h-4 text-sky-500" />
                 Изменить разрешение
               </span>
             </label>
@@ -178,7 +178,7 @@ export function Controls({
 
           {globalResizeMax !== null && (
             <div className="flex flex-col gap-2 mt-1.5 animate-fade-in">
-              <span className="text-[10px] text-slate-400">Максимальная сторона (px):</span>
+              <span className="text-[10px] font-semibold text-slate-500">Максимальная сторона (px):</span>
               <div className="grid grid-cols-4 gap-1">
                 {([800, 1200, 1920, 2560] as number[]).map((size) => (
                   <button
@@ -186,17 +186,17 @@ export function Controls({
                     type="button"
                     onClick={() => setGlobalResizeMax(size)}
                     disabled={isConverting}
-                    className={`py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    className={`py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                       globalResizeMax === size
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]'
-                        : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10 hover:text-slate-300'
+                        ? 'aero-btn-blue border-transparent'
+                        : 'aero-btn-glass border-transparent bg-white/15 hover:bg-white/30'
                     }`}
                   >
                     {size}
                   </button>
                 ))}
               </div>
-              <span className="text-[9px] text-slate-500">
+              <span className="text-[9px] text-slate-500 font-medium">
                 Большие стороны будут уменьшены с сохранением пропорций.
               </span>
             </div>
@@ -205,10 +205,10 @@ export function Controls({
 
         {/* Quality Slider (Conditional) */}
         {showQualitySlider && (
-          <div className="flex flex-col gap-2 p-4 rounded-xl bg-white/5 border border-white/5">
-            <div className="flex justify-between items-center text-sm font-medium">
-              <span className="text-slate-300">Качество сжатия</span>
-              <span className="text-cyan-400">{Math.round(quality * 100)}%</span>
+          <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white/20 border border-white/40">
+            <div className="flex justify-between items-center text-sm font-bold text-slate-700">
+              <span>Качество сжатия</span>
+              <span className="text-sky-600 font-extrabold">{Math.round(quality * 100)}%</span>
             </div>
             <input
               type="range"
@@ -220,7 +220,7 @@ export function Controls({
               disabled={isConverting}
               className="w-full h-1 my-2"
             />
-            <div className="flex justify-between text-[10px] text-slate-500">
+            <div className="flex justify-between text-[10px] text-slate-500 font-semibold">
               <span>Меньший размер</span>
               <span>Лучшее качество</span>
             </div>
@@ -230,24 +230,24 @@ export function Controls({
 
       {/* Error Message */}
       {error && (
-        <div className="text-sm text-rose-400 bg-rose-500/10 border border-rose-500/20 px-4 py-2.5 rounded-xl">
+        <div className="text-sm font-semibold text-rose-700 bg-rose-100 border border-rose-200 px-4 py-2.5 rounded-2xl">
           {error}
         </div>
       )}
 
       {/* Total Savings Summary */}
       {successCount > 0 && totalOriginal > 0 && (
-        <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col gap-1 text-center">
-          <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Суммарная экономия</span>
+        <div className="p-4 rounded-2xl border border-emerald-500/35 bg-emerald-500/10 flex flex-col gap-1 text-center shadow-sm">
+          <span className="text-xs text-emerald-800 uppercase tracking-wider font-bold">Суммарная экономия</span>
           <div className="flex justify-center items-baseline gap-2 mt-1">
-            <span className="text-2xl font-bold text-emerald-400">
+            <span className="text-2xl font-black text-emerald-600">
               {isSmaller ? `-${totalSavedPercent}%` : `+${Math.abs(totalSavedPercent)}%`}
             </span>
-            <span className="text-sm font-medium text-slate-300">
+            <span className="text-sm font-semibold text-slate-600">
               ({formatSize(Math.abs(totalSaved))})
             </span>
           </div>
-          <span className="text-[10px] text-slate-500">
+          <span className="text-[10px] text-slate-500 font-medium">
             Размер уменьшился с {formatSize(totalOriginal)} до {formatSize(totalConverted)}
           </span>
         </div>
@@ -261,7 +261,7 @@ export function Controls({
             type="button"
             onClick={onDownloadZip}
             disabled={isConverting}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-semibold transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-3.5 rounded-2xl aero-btn-green flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             <Download className="w-5 h-5" />
             <span>Скачать архив ZIP ({successCount})</span>
@@ -273,7 +273,7 @@ export function Controls({
             type="button"
             onClick={onConvert}
             disabled={isConverting || totalCount === 0}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-semibold transition-all duration-300 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-full py-3.5 rounded-2xl aero-btn-blue flex items-center justify-center gap-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
           >
             {isConverting ? (
               <>
@@ -294,7 +294,7 @@ export function Controls({
           type="button"
           onClick={onClear}
           disabled={isConverting}
-          className="w-full py-3 rounded-xl glass-button text-slate-300 hover:text-white font-medium flex items-center justify-center gap-2 cursor-pointer disabled:opacity-30"
+          className="w-full py-3 rounded-2xl aero-btn-glass flex items-center justify-center gap-2 cursor-pointer disabled:opacity-30"
         >
           <RefreshCw className="w-4 h-4" />
           <span>Очистить всё</span>

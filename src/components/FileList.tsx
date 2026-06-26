@@ -68,13 +68,13 @@ function FileRow({
   );
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/8 transition-colors duration-150">
+    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/40 border border-white/50 hover:bg-white/60 transition-all duration-150 shadow-sm">
       {/* Mini-preview */}
-      <div className="w-12 h-12 rounded-lg overflow-hidden border border-white/10 flex-shrink-0 bg-slate-900">
+      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/80 flex-shrink-0 bg-slate-200">
         {previewUrl ? (
           <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-500">
+          <div className="w-full h-full flex items-center justify-center text-slate-400">
             <FileImage className="w-5 h-5" />
           </div>
         )}
@@ -82,10 +82,10 @@ function FileRow({
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-200 truncate" title={downloadName}>
+        <p className="text-sm font-bold text-slate-800 truncate" title={downloadName}>
           {downloadName}
         </p>
-        <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-400">
+        <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
           <span className="truncate max-w-[120px]" title={item.file.name}>
             {item.file.name}
           </span>
@@ -93,10 +93,10 @@ function FileRow({
           {item.status === 'success' && (
             <>
               <span>&rarr;</span>
-              <span className="text-cyan-300 font-medium">{convertedSizeStr}</span>
+              <span className="text-sky-600 font-bold">{convertedSizeStr}</span>
               {savingsText && (
-                <span className={`font-semibold px-1 py-0.5 rounded text-[10px] ${
-                  isSmaller ? 'text-emerald-400 bg-emerald-500/10' : 'text-amber-400 bg-amber-500/10'
+                <span className={`font-bold px-1.5 py-0.5 rounded-md text-[10px] ${
+                  isSmaller ? 'text-emerald-700 bg-emerald-100 border border-emerald-200/50' : 'text-amber-700 bg-amber-100 border border-amber-200/50'
                 }`}>
                   {savingsText}
                 </span>
@@ -109,19 +109,19 @@ function FileRow({
       {/* Status & Actions */}
       <div className="flex items-center gap-2">
         {item.status === 'converting' && (
-          <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
+          <Loader2 className="w-5 h-5 text-sky-500 animate-spin" />
         )}
         
         {item.status === 'success' && item.convertedUrl && (
           <>
-            <div className="text-emerald-400 p-1">
-              <Check className="w-5 h-5" />
+            <div className="text-emerald-600 bg-emerald-100 border border-emerald-200 p-0.5 rounded-full">
+              <Check className="w-4 h-4" />
             </div>
             <a
               href={item.convertedUrl}
               download={downloadName}
               title="Скачать этот файл"
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+              className="p-2 rounded-xl text-slate-500 hover:text-sky-600 hover:bg-white/80 transition-colors border border-transparent hover:border-white/40 shadow-none hover:shadow-sm"
             >
               <Download className="w-4 h-4" />
             </a>
@@ -129,20 +129,20 @@ function FileRow({
         )}
 
         {item.status === 'error' && (
-          <div className="text-rose-400 p-1" title={item.error || 'Ошибка'}>
-            <AlertCircle className="w-5 h-5" />
+          <div className="text-rose-600 bg-rose-100 border border-rose-200 p-0.5 rounded-full" title={item.error || 'Ошибка'}>
+            <AlertCircle className="w-4 h-4" />
           </div>
         )}
 
         {item.status === 'idle' && (
-          <div className="w-2.5 h-2.5 rounded-full bg-slate-500 mr-1"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-slate-400 mr-1"></div>
         )}
 
         <button
           onClick={onRemove}
           disabled={item.status === 'converting'}
           title="Удалить"
-          className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed border border-transparent hover:border-rose-200/25"
         >
           <Trash2 className="w-4 h-4" />
         </button>
@@ -186,7 +186,7 @@ export function FileList({
       {/* Search & Filter Header */}
       <div className="flex flex-col gap-2.5">
         <div className="flex justify-between items-center px-1">
-          <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Очередь файлов ({items.length})
           </span>
         </div>
@@ -199,12 +199,12 @@ export function FileList({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Поиск по названию..."
-            className="glass-input pl-9 pr-8 py-2 w-full rounded-xl text-sm text-slate-200"
+            className="aero-input pl-9 pr-8 py-2 w-full rounded-2xl text-sm"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2.5 text-slate-400 hover:text-white cursor-pointer"
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -224,15 +224,17 @@ export function FileList({
               ? items.length 
               : items.filter((item) => item.status === pill.key).length;
             
+            const isActive = statusFilter === pill.key;
+            
             return (
               <button
                 key={pill.key}
                 type="button"
                 onClick={() => setStatusFilter(pill.key)}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all cursor-pointer ${
-                  statusFilter === pill.key
-                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                    : 'bg-white/5 text-slate-400 border border-transparent hover:bg-white/10 hover:text-slate-300'
+                className={`px-3 py-1 rounded-xl text-[10px] font-semibold transition-all cursor-pointer ${
+                  isActive
+                    ? 'aero-btn-blue text-[10px] py-1 px-3 shadow-sm'
+                    : 'aero-btn-glass text-[10px] py-1 px-3 border-transparent bg-white/20 hover:bg-white/40'
                 }`}
               >
                 {pill.label} ({count})
@@ -245,7 +247,7 @@ export function FileList({
       {/* Files List Container */}
       <div className="flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-1">
         {filteredItems.length === 0 ? (
-          <div className="text-center py-8 text-sm text-slate-500 border border-dashed border-white/5 rounded-xl bg-white/[0.01]">
+          <div className="text-center py-8 text-sm font-semibold text-slate-400 border border-dashed border-sky-300/40 rounded-2xl bg-white/10">
             Файлы не найдены
           </div>
         ) : (
