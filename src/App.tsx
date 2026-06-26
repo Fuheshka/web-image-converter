@@ -64,17 +64,17 @@ function App() {
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between py-12 px-4 md:px-8 select-none overflow-hidden z-10">
       {/* Floating Aero bubbles (Skeuomorphic organic elements) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute w-24 h-24 aero-bubble animate-float-slow left-[8%] bottom-[-100px]"></div>
-        <div className="absolute w-16 h-16 aero-bubble animate-float-medium left-[25%] bottom-[-150px] [animation-delay:4s]"></div>
-        <div className="absolute w-32 h-32 aero-bubble animate-float-slow left-[42%] bottom-[-200px] [animation-delay:8s]"></div>
-        <div className="absolute w-12 h-12 aero-bubble animate-float-fast left-[58%] bottom-[-80px] [animation-delay:2s]"></div>
-        <div className="absolute w-20 h-20 aero-bubble animate-float-medium left-[73%] bottom-[-120px] [animation-delay:6s]"></div>
-        <div className="absolute w-28 h-28 aero-bubble animate-float-slow left-[88%] bottom-[-180px] [animation-delay:11s]"></div>
-        <div className="absolute w-14 h-14 aero-bubble animate-float-fast left-[18%] bottom-[-100px] [animation-delay:7s]"></div>
-        <div className="absolute w-26 h-26 aero-bubble animate-float-slow left-[34%] bottom-[-130px] [animation-delay:14s]"></div>
-        <div className="absolute w-18 h-18 aero-bubble animate-float-medium left-[64%] bottom-[-140px] [animation-delay:5s]"></div>
-        <div className="absolute w-30 h-30 aero-bubble animate-float-slow left-[80%] bottom-[-200px] [animation-delay:3s]"></div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute w-24 h-24 aero-bubble animate-float-slow left-[8%] top-[100%]"></div>
+        <div className="absolute w-16 h-16 aero-bubble animate-float-medium left-[25%] top-[100%] [animation-delay:4s]"></div>
+        <div className="absolute w-32 h-32 aero-bubble animate-float-slow left-[42%] top-[100%] [animation-delay:8s]"></div>
+        <div className="absolute w-12 h-12 aero-bubble animate-float-fast left-[58%] top-[100%] [animation-delay:2s]"></div>
+        <div className="absolute w-20 h-20 aero-bubble animate-float-medium left-[73%] top-[100%] [animation-delay:6s]"></div>
+        <div className="absolute w-28 h-28 aero-bubble animate-float-slow left-[88%] top-[100%] [animation-delay:11s]"></div>
+        <div className="absolute w-14 h-14 aero-bubble animate-float-fast left-[18%] top-[100%] [animation-delay:7s]"></div>
+        <div className="absolute w-26 h-26 aero-bubble animate-float-slow left-[34%] top-[100%] [animation-delay:14s]"></div>
+        <div className="absolute w-18 h-18 aero-bubble animate-float-medium left-[64%] top-[100%] [animation-delay:5s]"></div>
+        <div className="absolute w-30 h-30 aero-bubble animate-float-slow left-[80%] top-[100%] [animation-delay:3s]"></div>
       </div>
 
       {/* Header */}
@@ -83,7 +83,7 @@ function App() {
           <Sparkles className="w-3.5 h-3.5 text-sky-500" />
           <span>Пакетная конвертация в браузере</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-900 via-sky-700 to-emerald-800 drop-shadow-sm">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-sky-900 via-sky-700 to-emerald-800 drop-shadow-sm py-2">
           Web Image Converter
         </h1>
         <p className="text-sm md:text-base font-semibold text-sky-900/80 max-w-md">
